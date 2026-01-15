@@ -4,6 +4,9 @@ using Xunit;
 
 namespace CourierService.Tests
 {
+    /// <summary>
+    /// Performs calculation for Package Delivery Time tests.
+    /// </summary>
     public class DeliveryTimeTests
     {
         [Fact]

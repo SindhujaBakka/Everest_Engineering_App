@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace CourierService
 {
+    /// <summary>
+    /// Helper class for all the business logic to perform Delivery Calculations
+    /// </summary>
     public class DeliveryHelper
     {
 

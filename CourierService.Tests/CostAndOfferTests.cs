@@ -1,5 +1,8 @@
 namespace CourierService.Tests
 {
+    /// <summary>
+    /// Performs Package Delivery Cost Tests
+    /// </summary>
     public class CostAndOfferTests
     {
         [Fact]
