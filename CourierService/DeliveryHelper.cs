@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CourierService.Domain;
 
 namespace CourierService
 {
@@ -50,14 +51,20 @@ namespace CourierService
         /// <param name="maxLoad">Max weight to be carried in a vehicle</param>
         public static void CalculateDeliveryTimes(List<Package> packages, int vehicleCount, double speed, double maxLoad)
         {
-            var vehicleAvailableAt = new double[vehicleCount];
+            var vehicles = new List<Vehicle>();
+
+            for (int i = 0; i < vehicleCount; i++)
+            {
+                vehicles.Add(new Vehicle(maxLoad, speed));
+            }
+
             var remaining = new List<Package>(packages);
 
             while (remaining.Any())
             {
-                int vehicleIndex = Array.IndexOf(vehicleAvailableAt, vehicleAvailableAt.Min());
+                var vehicle = vehicles.OrderBy(v => v.AvailableAt).First();
 
-                double currentTime = vehicleAvailableAt[vehicleIndex];
+                double currentTime = vehicle.AvailableAt;
 
                 var validCombinations = GetAllValidShipmentCombinations(remaining, maxLoad);
 
@@ -77,7 +84,7 @@ namespace CourierService
                     remaining.Remove(pkg);
                 }
 
-                vehicleAvailableAt[vehicleIndex] = currentTime + (2 * travelTime);
+                vehicle.AvailableAt = Truncate(currentTime + (2 * travelTime), 2);
             }
         }
 

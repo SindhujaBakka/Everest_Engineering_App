@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using CourierService;
+using CourierService.Domain;
 using Xunit;
 
 namespace CourierService.Tests

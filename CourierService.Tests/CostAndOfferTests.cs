@@ -1,3 +1,5 @@
+using CourierService.Domain;
+
 namespace CourierService.Tests
 {
     /// <summary>
