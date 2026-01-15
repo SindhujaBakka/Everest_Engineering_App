@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CourierService.Domain;
 using CourierService.Domain;
+using CourierService.Offers;
 using CourierService.Services;
 
 namespace CourierService
@@ -124,10 +125,19 @@ namespace CourierService
                 vehicles.Add(new Vehicle(maxLoad, speed));
             }
 
+            // Register offers
+            var offers = new List<IOffer>
+            {
+                new OFR001(),
+                new OFR002(),
+                new OFR003()
+            };
+
             // Create services
             var shipmentPlanner = new ShipmentPlanner();
             var deliveryTimeCalculator = new DeliveryTimeCalculator(shipmentPlanner);
-            var costCalculator = new CostCalculator();
+            var offerService = new OfferService(offers);
+            var costCalculator = new CostCalculator(offerService);
 
 
             // Calculate costs for each package
