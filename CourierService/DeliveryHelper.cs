@@ -56,25 +56,12 @@ namespace CourierService
 
                 double currentTime = vehicleAvailableAt[vehicleIndex];
 
-
-                //var shipment = new List<Package>();
-                //double currentLoad = 0;
-                //var ordered = remaining .OrderByDescending(p => p.Weight).ToList();
-                //foreach (var pkg in ordered)
-                //{
-                //    if (currentLoad + pkg.Weight <= maxLoad)
-                //    {
-                //        shipment.Add(pkg);
-                //        currentLoad += pkg.Weight;
-                //    }
-                //}
-
                 var validCombinations = GetAllValidShipmentCombinations(remaining, maxLoad);
 
                 var shipment = validCombinations
-                                .OrderByDescending(s => s.Count)                    // Rule 1: max packages
-                                .ThenByDescending(s => s.Sum(p => p.Weight))        // Rule 2: max weight
-                                .ThenBy(s => s.Max(p => p.Distance))                // Rule 3: earliest delivery
+                                .OrderByDescending(s => s.Count)                    // Rule 1: fetch max packages
+                                .ThenByDescending(s => s.Sum(p => p.Weight))        // Rule 2: filter by max weight
+                                .ThenBy(s => s.Max(p => p.Distance))                // Rule 3: filter by earliest delivery
                                 .First();
 
                 double maxDistance = shipment.Max(p => p.Distance);
