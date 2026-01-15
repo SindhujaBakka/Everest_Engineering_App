@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using CourierService.Domain;
-using CourierService.Domain;
+using CourierService.Input;
 using CourierService.Offers;
 using CourierService.Services;
+using CourierService.Validation;
 
 namespace CourierService
 {
@@ -37,93 +38,89 @@ namespace CourierService
             string pkgId;
             double baseCost, speed, maxLoad;
             int packageCount, vehicleCount;
-
-            if (!isTestMode)
-            {
-                Console.Write("Enter base delivery cost and no. of packages: ");
-                var input = Console.ReadLine().Split();
-                baseCost = double.Parse(input[0]);
-                packageCount = int.Parse(input[1]);
-            }
-            else
-            {
-                // Collect Base Delivery Cost and Package Details separately for better readability.
-                Console.Write("Enter base delivery cost: ");
-                baseCost = double.Parse(Console.ReadLine());
-
-                Console.Write("Enter number of packages: ");
-                packageCount = int.Parse(Console.ReadLine());
-            }            
-
             var packages = new List<Package>();
+            var vehicles = new List<Vehicle>();
 
-            // Collect individual Package Details.
-            for (int i = 0; i < packageCount; i++)
+            try
             {
                 if (!isTestMode)
                 {
-                    Console.Write($"Enter details for Package {i + 1}:");
-                    var parts = Console.ReadLine().Split();
-                    packages.Add(new Package
-                    {
-                        Id = parts[0],
-                        Weight = double.Parse(parts[1]),
-                        Distance = double.Parse(parts[2]),
-                        OfferCode = parts[3]
-                    });
+                    Console.Write("Enter base delivery cost and no. of packages: ");
+                    var input = Console.ReadLine().Split();
+                    baseCost = double.Parse(input[0]);
+                    packageCount = int.Parse(input[1]);
                 }
                 else
                 {
-                    pkgId = $"PKG{i + 1}";
-                    Console.WriteLine($"\nEnter details for Package {pkgId}");
-
-                    Console.Write("Weight (kg): ");
-                    double weight = double.Parse(Console.ReadLine());
-
-                    Console.Write("Distance (km): ");
-                    double distance = double.Parse(Console.ReadLine());
-
-                    Console.Write("Offer Code (OFR001 / OFR002 / OFR003 / NA): ");
-                    string offerCode = Console.ReadLine();
-
-                    packages.Add(new Package
-                    {
-                        Id = pkgId,
-                        Weight = weight,
-                        Distance = distance,
-                        OfferCode = offerCode
-                    });
+                    baseCost = ConsoleInputReader.ReadDouble("Enter base delivery cost: ");
+                    packageCount = ConsoleInputReader.ReadInt("Enter number of packages: ");
                 }
-                
-            }
 
-            Console.WriteLine("\nEnter Vehicle Details: ");
-            if (!isTestMode)
+                InputValidator.ValidateBaseCost(baseCost);
+
+                // Collect individual Package Details.
+                for (int i = 0; i < packageCount; i++)
+                {
+                    if (!isTestMode)
+                    {
+                        Console.Write($"Enter details for Package {i + 1}:");
+                        var parts = Console.ReadLine().Split();
+                        packages.Add(new Package
+                        {
+                            Id = parts[0],
+                            Weight = double.Parse(parts[1]),
+                            Distance = double.Parse(parts[2]),
+                            OfferCode = parts[3]
+                        });
+                    }
+                    else
+                    {
+                        pkgId = $"PKG{i + 1}";
+                        Console.WriteLine($"\nEnter details for Package {pkgId}");
+
+                        double weight = ConsoleInputReader.ReadDouble("Weight (kg): ");
+                        double distance = ConsoleInputReader.ReadDouble("Distance (km): ");
+                        string offerCode = ConsoleInputReader.ReadString("Offer Code (OFR001 / OFR002 / OFR003 / NA): ");
+
+                        packages.Add(new Package
+                        {
+                            Id = pkgId,
+                            Weight = weight,
+                            Distance = distance,
+                            OfferCode = offerCode
+                        });
+                    }
+                }
+
+                Console.WriteLine("\nEnter Vehicle Details: ");
+                if (!isTestMode)
+                {
+                    var vehicleInput = Console.ReadLine().Split();
+                    vehicleCount = int.Parse(vehicleInput[0]);
+                    speed = double.Parse(vehicleInput[1]);
+                    maxLoad = double.Parse(vehicleInput[2]);
+                }
+                else
+                {
+                    // Collect Vehicle Details separately for better readability.                
+                    vehicleCount = ConsoleInputReader.ReadInt("Number of vehicles: ");
+                    speed = ConsoleInputReader.ReadDouble("Vehicle speed (km/hr): ");
+                    maxLoad = ConsoleInputReader.ReadDouble("Max carriable weight per vehicle (kg): ");
+                }
+
+                InputValidator.ValidateVehicleInputs(vehicleCount, speed, maxLoad);
+
+                // Create vehicles            
+                for (int i = 0; i < vehicleCount; i++)
+                {
+                    vehicles.Add(new Vehicle(maxLoad, speed));
+                }
+            }
+            catch (ArgumentException ex)
             {
-                var vehicleInput = Console.ReadLine().Split();
-                vehicleCount = int.Parse(vehicleInput[0]);
-                speed = double.Parse(vehicleInput[1]);
-                maxLoad = double.Parse(vehicleInput[2]);
-            }
-            else
-            {
-                // Collect Vehicle Details separately for better readability.                
-                Console.Write("Number of vehicles: ");
-                vehicleCount = int.Parse(Console.ReadLine());
-
-                Console.Write("Vehicle speed (km/hr): ");
-                speed = double.Parse(Console.ReadLine());
-
-                Console.Write("Max carriable weight per vehicle (kg): ");
-                maxLoad = double.Parse(Console.ReadLine());
-            }
-
-            // Create vehicles
-            var vehicles = new List<Vehicle>();
-            for (int i = 0; i < vehicleCount; i++)
-            {
-                vehicles.Add(new Vehicle(maxLoad, speed));
-            }
+                Console.WriteLine($"Input error: {ex.Message}");
+                return;
+            }            
 
             // Register offers
             var offers = new List<IOffer>
@@ -143,6 +140,7 @@ namespace CourierService
             // Calculate costs for each package
             foreach (var pkg in packages)
             {
+                InputValidator.ValidatePackage(pkg);
                 costCalculator.CalculateCost(pkg, baseCost);
             }
 
