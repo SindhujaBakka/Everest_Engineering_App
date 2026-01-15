@@ -6,6 +6,7 @@
 /CourierService/.vs/CourierService
 /CourierService/bin/Debug/net8.0
 /CourierService/obj
-/CourierService.Tests
 *.json
 /CourierService/.vs/ProjectEvaluation
+/CourierService.Tests/bin/Debug/net8.0
+/CourierService.Tests/obj
