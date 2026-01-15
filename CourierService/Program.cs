@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using CourierService.Domain;
+using CourierService.Domain;
+using CourierService.Services;
 
 namespace CourierService
 {
@@ -115,15 +117,27 @@ namespace CourierService
                 maxLoad = double.Parse(Console.ReadLine());
             }
 
-                        
+            // Create vehicles
+            var vehicles = new List<Vehicle>();
+            for (int i = 0; i < vehicleCount; i++)
+            {
+                vehicles.Add(new Vehicle(maxLoad, speed));
+            }
+
+            // Create services
+            var shipmentPlanner = new ShipmentPlanner();
+            var deliveryTimeCalculator = new DeliveryTimeCalculator(shipmentPlanner);
+            var costCalculator = new CostCalculator();
+
+
             // Calculate costs for each package
             foreach (var pkg in packages)
             {
-                DeliveryHelper.CalculateCost(baseCost, pkg);
+                costCalculator.CalculateCost(pkg, baseCost);
             }
 
             // Calculate delivery times for each package
-            DeliveryHelper.CalculateDeliveryTimes(packages, vehicleCount, speed, maxLoad);
+            deliveryTimeCalculator.CalculateDeliveryTimes(packages, vehicles);
 
             if (isTestMode)
             {

@@ -3,9 +3,9 @@
 ################################################################################
 
 /.vs/Everest_Engineering_App/v17
-/CourierService
 /CourierService/.vs/CourierService
 /CourierService/bin/Debug/net8.0
 /CourierService/obj
 /CourierService.Tests
 *.json
+/CourierService/.vs/ProjectEvaluation
