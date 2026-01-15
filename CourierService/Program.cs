@@ -24,75 +24,95 @@ namespace CourierService
             { "OFR003", 0.05 }
         };
 
+        public static readonly bool isTestMode = true;
+
         static void Main(string[] args)
         {
             Console.WriteLine("=== Courier Service Cost & Delivery Time Calculator ===\n");
 
+            string pkgId;
+            double baseCost, speed, maxLoad;
+            int packageCount, vehicleCount;
 
-            //var input = Console.ReadLine().Split();
-            //double baseCost = double.Parse(input[0]);
-            //int packageCount = int.Parse(input[1]);
+            if (!isTestMode)
+            {
+                Console.Write("Enter base delivery cost and no. of packages: ");
+                var input = Console.ReadLine().Split();
+                baseCost = double.Parse(input[0]);
+                packageCount = int.Parse(input[1]);
+            }
+            else
+            {
+                // Collect Base Delivery Cost and Package Details separately for better readability.
+                Console.Write("Enter base delivery cost: ");
+                baseCost = double.Parse(Console.ReadLine());
 
-            // Collect Base Delivery Cost and Package Details separately for better readability.
-            Console.Write("Enter base delivery cost: ");
-            double baseCost = double.Parse(Console.ReadLine());
-
-            Console.Write("Enter number of packages: ");
-            int packageCount = int.Parse(Console.ReadLine());
+                Console.Write("Enter number of packages: ");
+                packageCount = int.Parse(Console.ReadLine());
+            }            
 
             var packages = new List<Package>();
 
+            // Collect individual Package Details.
             for (int i = 0; i < packageCount; i++)
             {
-                //var parts = Console.ReadLine().Split();
-                //packages.Add(new Package
-                //{
-                //    Id = parts[0],
-                //    Weight = double.Parse(parts[1]),
-                //    Distance = double.Parse(parts[2]),
-                //    OfferCode = parts[3]
-                //});
-
-                //Console.Write("Package Id: ");
-                //string id = Console.ReadLine();
-
-                string pkgId = $"PKG{i + 1}";
-                Console.WriteLine($"\nEnter details for Package {pkgId}");
-
-                Console.Write("Weight (kg): ");
-                double weight = double.Parse(Console.ReadLine());
-
-                Console.Write("Distance (km): ");
-                double distance = double.Parse(Console.ReadLine());
-
-                Console.Write("Offer Code (OFR001 / OFR002 / OFR003 / NA): ");
-                string offerCode = Console.ReadLine();
-
-                packages.Add(new Package
+                if (!isTestMode)
                 {
-                    Id = pkgId,
-                    Weight = weight,
-                    Distance = distance,
-                    OfferCode = offerCode
-                });
+                    Console.Write($"Enter details for Package {i + 1}:");
+                    var parts = Console.ReadLine().Split();
+                    packages.Add(new Package
+                    {
+                        Id = parts[0],
+                        Weight = double.Parse(parts[1]),
+                        Distance = double.Parse(parts[2]),
+                        OfferCode = parts[3]
+                    });
+                }
+                else
+                {
+                    pkgId = $"PKG{i + 1}";
+                    Console.WriteLine($"\nEnter details for Package {pkgId}");
+
+                    Console.Write("Weight (kg): ");
+                    double weight = double.Parse(Console.ReadLine());
+
+                    Console.Write("Distance (km): ");
+                    double distance = double.Parse(Console.ReadLine());
+
+                    Console.Write("Offer Code (OFR001 / OFR002 / OFR003 / NA): ");
+                    string offerCode = Console.ReadLine();
+
+                    packages.Add(new Package
+                    {
+                        Id = pkgId,
+                        Weight = weight,
+                        Distance = distance,
+                        OfferCode = offerCode
+                    });
+                }
+                
             }
 
+            Console.WriteLine("\nEnter Vehicle Details: ");
+            if (!isTestMode)
+            {
+                var vehicleInput = Console.ReadLine().Split();
+                vehicleCount = int.Parse(vehicleInput[0]);
+                speed = double.Parse(vehicleInput[1]);
+                maxLoad = double.Parse(vehicleInput[2]);
+            }
+            else
+            {
+                // Collect Vehicle Details separately for better readability.                
+                Console.Write("Number of vehicles: ");
+                vehicleCount = int.Parse(Console.ReadLine());
 
-            //var vehicleInput = Console.ReadLine().Split();
-            //int vehicleCount = int.Parse(vehicleInput[0]);
-            //double speed = double.Parse(vehicleInput[1]);
-            //double maxLoad = double.Parse(vehicleInput[2]);
+                Console.Write("Vehicle speed (km/hr): ");
+                speed = double.Parse(Console.ReadLine());
 
-            // Collect Vehicle Details separately for better readability.
-            Console.WriteLine("\nEnter Vehicle Details");
-            Console.Write("Number of vehicles: ");
-            int vehicleCount = int.Parse(Console.ReadLine());
-
-            Console.Write("Vehicle speed (km/hr): ");
-            double speed = double.Parse(Console.ReadLine());
-
-            Console.Write("Max carriable weight per vehicle (kg): ");
-            double maxLoad = double.Parse(Console.ReadLine());
+                Console.Write("Max carriable weight per vehicle (kg): ");
+                maxLoad = double.Parse(Console.ReadLine());
+            }
 
                         
             // Calculate costs for each package
@@ -104,14 +124,17 @@ namespace CourierService
             // Calculate delivery times for each package
             DeliveryHelper.CalculateDeliveryTimes(packages, vehicleCount, speed, maxLoad);
 
-            // Build and display the calculated output in a summary format for better readability.
-            Console.WriteLine("\n=== Package Delivery Summary ===\n");
-
-            foreach (var pkg in packages)
+            if (isTestMode)
             {
-                BuildOutput(pkg);
-                Console.WriteLine(pkg.Output);
-                Console.WriteLine("--------------------------------------------");
+                // Build and display the calculated output in a summary format for better readability.
+                Console.WriteLine("\n=== Package Delivery Summary ===\n");
+
+                foreach (var pkg in packages)
+                {
+                    BuildOutput(pkg);
+                    Console.WriteLine(pkg.Output);
+                    Console.WriteLine("--------------------------------------------");
+                }
             }
 
             Console.WriteLine("\n=== Final Required Output Format ===\n");
