@@ -1,4 +1,6 @@
 using CourierService.Domain;
+using CourierService.Offers;
+using CourierService.Services;
 
 namespace CourierService.Tests
 {
@@ -7,9 +9,14 @@ namespace CourierService.Tests
     /// </summary>
     public class CostAndOfferTests
     {
+
         [Fact]
         public void OFR003_Should_Apply_5Percent_Discount()
         {
+            var offers = new List<IOffer> { new OFR003() };
+            var offerService = new OfferService(offers);
+            var costCalculator = new CostCalculator(offerService);
+
             var pkg = new Package
             {
                 Weight = 10,
@@ -17,8 +24,8 @@ namespace CourierService.Tests
                 OfferCode = "OFR003"
             };
 
-            DeliveryHelper.CalculateCost(100, pkg);
-
+            costCalculator.CalculateCost(pkg, 100);
+            
             Assert.True(pkg.OfferApplied);
             Assert.Equal(35, pkg.Discount);
             Assert.Equal(665, pkg.TotalCost);
@@ -27,6 +34,10 @@ namespace CourierService.Tests
         [Fact]
         public void Invalid_Offer_Should_Not_Apply_Discount()
         {
+            var offers = new List<IOffer> { new OFR001() };
+            var offerService = new OfferService(offers);
+            var costCalculator = new CostCalculator(offerService);
+
             var pkg = new Package
             {
                 Weight = 5,
@@ -34,7 +45,7 @@ namespace CourierService.Tests
                 OfferCode = "OFR001"
             };
 
-            DeliveryHelper.CalculateCost(100, pkg);
+            costCalculator.CalculateCost(pkg, 100);
 
             Assert.False(pkg.OfferApplied);
             Assert.Equal(0, pkg.Discount);
@@ -44,6 +55,10 @@ namespace CourierService.Tests
         [Fact]
         public void Invalid_OfferCode_Should_Not_Apply_Discount()
         {
+            var offers = new List<IOffer> { new OFR001() };
+            var offerService = new OfferService(offers);
+            var costCalculator = new CostCalculator(offerService);
+
             var pkg = new Package
             {
                 Weight = 5,
@@ -51,7 +66,7 @@ namespace CourierService.Tests
                 OfferCode = "OFFER001"
             };
 
-            DeliveryHelper.CalculateCost(100, pkg);
+            costCalculator.CalculateCost(pkg, 100);
 
             Assert.False(pkg.OfferApplied);
             Assert.Equal(0, pkg.Discount);
@@ -61,6 +76,10 @@ namespace CourierService.Tests
         [Fact]
         public void No_Offer_Code_Should_Give_No_Discount()
         {
+            var offers = new List<IOffer> { new OFR001() };
+            var offerService = new OfferService(offers);
+            var costCalculator = new CostCalculator(offerService);
+
             var pkg = new Package
             {
                 Weight = 50,
@@ -68,7 +87,7 @@ namespace CourierService.Tests
                 OfferCode = "NA"
             };
 
-            DeliveryHelper.CalculateCost(100, pkg);
+            costCalculator.CalculateCost(pkg, 100);
 
             Assert.False(pkg.OfferApplied);
             Assert.Equal(0, pkg.Discount);

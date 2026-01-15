@@ -9,7 +9,13 @@ namespace CourierService.Services
 {
     public class ShipmentPlanner
     {
-
+        /// <summary>
+        /// Get the best shipment follwing the rules mentioned below
+        /// Rule 1: fetch max packages
+        /// Rule 2: filter by max weight
+        /// Rule 3: filter by earliest delivery
+        /// </summary>
+        /// <returns></returns>
         public List<Package> GetShipment(List<Package> packages, double maxLoad)
         {
             var validCombinations = GetAllValidShipmentCombinations(packages, maxLoad);

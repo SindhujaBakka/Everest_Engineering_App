@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CourierService.Domain;
+using CourierService.Services;
 using Xunit;
 
 namespace CourierService.Tests
@@ -12,12 +13,20 @@ namespace CourierService.Tests
         [Fact]
         public void DeliveryTime_Should_Be_Calculated_For_Package()
         {
+            var shipmentPlanner = new ShipmentPlanner();
+            var deliveryTimeCalculator = new DeliveryTimeCalculator(shipmentPlanner);
+
             var packages = new List<Package>
             {
                 new Package { Id = "PKG1", Weight = 50, Distance = 70 }
             };
 
-            DeliveryHelper.CalculateDeliveryTimes(packages, vehicleCount: 1, speed: 70, maxLoad: 200);
+            var vehicles = new List<Vehicle>
+            {
+                new Vehicle(200, 70)
+            };
+
+            deliveryTimeCalculator.CalculateDeliveryTimes(packages, vehicles);
 
             Assert.True(packages[0].DeliveryTime > 0);
             Assert.Equal(1.0, packages[0].DeliveryTime, 2);

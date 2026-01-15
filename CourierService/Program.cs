@@ -11,24 +11,6 @@ namespace CourierService
 {
     public class Program
     {
-        // Predefined offer applicability rule criteria
-        public static readonly Dictionary<string, Func<Package, bool>> OfferRules =
-            new Dictionary<string, Func<Package, bool>>
-        {
-            { "OFR001", p => p.Distance < 200 && p.Weight >= 70 && p.Weight <= 200 },
-            { "OFR002", p => p.Distance >= 50 && p.Distance <= 150 && p.Weight >= 100 && p.Weight <= 250 },
-            { "OFR003", p => p.Distance >= 50 && p.Distance <= 250 && p.Weight >= 10 && p.Weight <= 150 }
-        };
-
-        // Predefined offer discount percentages
-        public static readonly Dictionary<string, double> OfferDiscounts =
-            new Dictionary<string, double>
-        {
-            { "OFR001", 0.10 },
-            { "OFR002", 0.07 },
-            { "OFR003", 0.05 }
-        };
-
         public static readonly bool isTestMode = true;
 
         static void Main(string[] args)
@@ -45,6 +27,7 @@ namespace CourierService
             {
                 if (!isTestMode)
                 {
+                    // TODO: Need to add input validations here!
                     Console.Write("Enter base delivery cost and no. of packages: ");
                     var input = Console.ReadLine().Split();
                     baseCost = double.Parse(input[0]);
@@ -63,6 +46,7 @@ namespace CourierService
                 {
                     if (!isTestMode)
                     {
+                        // TODO: Need to add input validations here!
                         Console.Write($"Enter details for Package {i + 1}:");
                         var parts = Console.ReadLine().Split();
                         packages.Add(new Package
@@ -95,6 +79,7 @@ namespace CourierService
                 Console.WriteLine("\nEnter Vehicle Details: ");
                 if (!isTestMode)
                 {
+                    // TODO: Need to add input validations here!
                     var vehicleInput = Console.ReadLine().Split();
                     vehicleCount = int.Parse(vehicleInput[0]);
                     speed = double.Parse(vehicleInput[1]);
